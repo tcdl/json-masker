@@ -1,7 +1,7 @@
 const _ = require('lodash');
 
 module.exports = (target) => {
-  return _.cloneDeepWith(target, (value) => {
+  return _.cloneDeepWith(target, (value, path) => {
     if (typeof(value) === 'string' || value instanceof String) {
       return maskString(value);
     }
@@ -11,12 +11,10 @@ module.exports = (target) => {
   });
 };
 
-const upperCaseLetters = /[A-Z]/g;
-const lowerCaseLetters = /[a-z]/g;
-const digits = /\d/g;
+const digit = /\d/g;
+const upperCaseBaseLatin = /[A-Z]/g;
+const notPunctuation = /[^X\s!-/:-@[-`{-~]/g;
 
-const maskString = (value) => {
-  return value.replace(upperCaseLetters, 'X').replace(lowerCaseLetters, 'x').replace(digits, '*');
-}
+const maskString = (value) => value.replace(digit, '*').replace(upperCaseBaseLatin, 'X').replace(notPunctuation, 'x');
 
-const maskNumber = () => 12345;
+const maskNumber = (value) => Array(Math.ceil(Math.log10(Math.abs(value))) + 1).join('*');
