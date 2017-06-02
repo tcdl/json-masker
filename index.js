@@ -1,7 +1,10 @@
 const _ = require('lodash');
 
-module.exports = (target) => {
-  return _.cloneDeepWith(target, (value, path) => {
+module.exports = (target, whitelist) => {
+  return _.cloneDeepWith(target, (value, key) => {
+    if (whitelist && whitelist.includes(key)) {
+      return;
+    }
     if (typeof(value) === 'string' || value instanceof String) {
       return maskString(value);
     }

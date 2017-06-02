@@ -3,50 +3,34 @@ const {assert} = require('chai');
 
 describe('json-mask', () => {
   it('should mask base latin chars in a string with X and x', () => {
-    assert.deepEqual(mask({prop: 'Qwerty'}), {prop: 'Xxxxxx'});
+    assert.deepEqual(mask({a: 'Qwerty'}), {a: 'Xxxxxx'});
   });
 
   it('should mask all chars that are not base latin with x', () => {
-    assert.deepEqual(mask({prop: 'Ĕőєחβ'}), {prop: 'xxxxx'});
+    assert.deepEqual(mask({a: 'Ĕőєחβ'}), {a: 'xxxxx'});
   });
   
   it('should mask digits in a string with *', () => {
-    assert.deepEqual(mask({prop: '8301'}), {prop: '****'});
+    assert.deepEqual(mask({a: '8301'}), {a: '****'});
   });
 
   it('should not mask punctuation and common signs in a string', () => {
-    const target = {prop: '-+.,!?@%$[]()'};
-    assert.deepEqual(mask(target), target);
-  });
-  
-  it('should mask number with a string of *', () => {
-    assert.deepEqual(mask({prop: 201}), {prop: '***'});
+    assert.deepEqual(mask({a: '-+.,!?@%$[]()'}), {a: '-+.,!?@%$[]()'});
   });
 
-  it('should deeply mask fields in an object', () => {
-    const target = {
-      customer: {
-        name: 'John Doe',
-        age: 62,
-        phone: '+1-313-85-93-62',
-        additional: {
-          pan: '3874-2185-4791-9148',
-          salary: '$100',
-          favoriteMusic: ['Classic', 'Jazz']
-        }
-      }
-    };
-    assert.deepEqual(mask(target), {
-      customer: {
-        name: 'Xxxx Xxx',
-        age: '**',
-        phone: '+*-***-**-**-**',
-        additional: {
-          pan: '****-****-****-****',
-          salary: '$***',
-          favoriteMusic: ['Xxxxxxx', 'Xxxx']
-        }
-      }
-    });
+  it('should mask a complex string', () => {
+    assert.deepEqual(mask({a: 'Phone: +1-313-85-93-62, Salary: $100, Name: Κοτζιά;'}), {a: 'Xxxxx: +*-***-**-**-**, Xxxxxx: $***, Xxxx: xxxxxx;'});
+  });
+  
+  it('should mask a number with a string of *', () => {
+    assert.deepEqual(mask({a: 201}), {a: '***'});
+  });
+
+  it('should mask properties deeply', () => {
+    assert.deepEqual(mask({foo: {bar: {a: 123, b: '!?%'}}, c: ['sensitive']}), {foo: {bar: {a: '***', b: '!?%'}}, c: ['xxxxxxxxx']});
+  });
+
+  it('should mask only whitelisted properties', () => {
+    assert.deepEqual(mask({a: 'data 1', foo: {b: 'data 2', c: 'data 3'}, d: 250}, ['a', 'c']), {a: 'data 1', foo: {b: 'xxxx *', c: 'data 3'}, d: '***'});
   });
 });
