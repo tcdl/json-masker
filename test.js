@@ -29,8 +29,4 @@ describe('json-mask', () => {
   it('should mask properties deeply', () => {
     assert.deepEqual(mask({foo: {bar: {a: 123, b: '!?%'}}, c: ['sensitive']}), {foo: {bar: {a: '***', b: '!?%'}}, c: ['xxxxxxxxx']});
   });
-
-  it('should mask only whitelisted properties', () => {
-    assert.deepEqual(mask({a: 'data 1', foo: {b: 'data 2', c: 'data 3'}, d: 250}, ['a', 'c']), {a: 'data 1', foo: {b: 'xxxx *', c: 'data 3'}, d: '***'});
-  });
 });
