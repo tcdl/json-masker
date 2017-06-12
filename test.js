@@ -22,8 +22,12 @@ describe('json-mask', () => {
     assert.deepEqual(mask({a: 'Phone: +1-313-85-93-62, Salary: $100, Name: Κοτζιά;'}), {a: 'Xxxxx: +*-***-**-**-**, Xxxxxx: $***, Xxxx: xxxxxx;'});
   });
   
-  it('should mask a number with a string of *', () => {
+  it('should mask a integer number with a string of *', () => {
     assert.deepEqual(mask({a: 201}), {a: '***'});
+  });
+
+  it('should mask a floating point number with a string of *', () => {
+    assert.deepEqual(mask({a: 12.75}), {a: '**.**'});
   });
 
   it('should not mask a boolean', () => {

@@ -17,4 +17,4 @@ const notPunctuation = /[^X\s!-/:-@[-`{-~]/g;
 
 const maskString = (value) => value.replace(digit, '*').replace(upperCaseBaseLatin, 'X').replace(notPunctuation, 'x');
 
-const maskNumber = (value) => Array(Math.ceil(Math.log10(Math.abs(value))) + 1).join('*');
+const maskNumber = (value) => maskString(value.toString());
