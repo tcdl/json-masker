@@ -22,12 +22,32 @@ describe('json-mask', () => {
     assert.deepEqual(mask({a: 'Phone: +1-313-85-93-62, Salary: $100, Name: Κοτζιά;'}), {a: 'Xxxxx: +*-***-**-**-**, Xxxxxx: $***, Xxxx: xxxxxx;'});
   });
   
-  it('should mask a integer number with a string of *', () => {
+  it('should mask integer numbers with *', () => {
     assert.deepEqual(mask({a: 201}), {a: '***'});
+    assert.deepEqual(mask({a: -12345}), {a: '-*****'});
+    assert.deepEqual(mask({a: 0}), {a: '*'});
   });
 
-  it('should mask a floating point number with a string of *', () => {
+  it('should mask real numbers with *', () => {
+    assert.deepEqual(mask({a: 0.004}), {a: '*.***'});
     assert.deepEqual(mask({a: 12.75}), {a: '**.**'});
+    assert.deepEqual(mask({a: 9.00000000081}), {a: '*.***********'});
+    assert.deepEqual(mask({a: -73917092743.8}), {a: '-***********.*'});
+  });
+
+  it('should mask boundary number values with *', () => {
+    assert.deepEqual(mask({a: Number.MAX_SAFE_INTEGER}), {a: '****************'});
+    assert.deepEqual(mask({a: Number.MIN_SAFE_INTEGER}), {a: '-****************'});
+    assert.deepEqual(mask({a: 1e+120}), {a: '*e+***'});
+    assert.deepEqual(mask({a: 1e-150}), {a: '*e-***'});
+    assert.deepEqual(mask({a: Number.MAX_VALUE}), {a: '*.****************e+***'});
+    assert.deepEqual(mask({a: Number.MIN_VALUE}), {a: '*e-***'});
+  });
+  
+  it('should not mask unrepresentable numbers', () => {
+    assert.deepEqual(mask({a: NaN}), {a: NaN});
+    assert.deepEqual(mask({a: Infinity}), {a: Infinity});
+    assert.deepEqual(mask({a: -Infinity}), {a: -Infinity});
   });
 
   it('should not mask a boolean', () => {
