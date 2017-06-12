@@ -18,7 +18,7 @@ const notPunctuation = /[^X\s!-/:-@[-`{-~]/g;
 const maskString = (value) => value.replace(digit, '*').replace(upperCaseLatin1, 'X').replace(notPunctuation, 'x');
 
 const maskNumber = (value) => {
-  if (Number.isNaN(value) || !Number.isFinite(value)) {
+  if (Number.isNaN(value) || !Number.isFinite(value.valueOf())) {
     return value;
   }
   return value.toString().replace(digit, '*');

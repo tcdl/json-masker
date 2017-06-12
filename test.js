@@ -5,6 +5,7 @@ describe('json-mask', () => {
   describe('strings', () => {
     it('should mask latin-1 letters with X and x', () => {
       assert.deepEqual(mask({a: 'Qwerty'}), {a: 'Xxxxxx'});
+      assert.deepEqual(mask({a: new String('Azerty')}), {a: 'Xxxxxx'});
     });
     
     it('should mask digits with *', () => {
@@ -21,7 +22,8 @@ describe('json-mask', () => {
     });
 
     it('should mask complex string', () => {
-      assert.deepEqual(mask({a: 'Phone: +1-313-85-93-62, Salary: $100, Name: Κοτζιά, Photo: ☺'}), {a: 'Xxxxx: +*-***-**-**-**, Xxxxxx: $***, Xxxx: xxxxxx, Xxxxx: x'});
+      assert.deepEqual(mask({a: 'Phone: +1-313-85-93-62, Salary: $100, Name: Κοτζιά, Photo: ☺'}),
+                       {a: 'Xxxxx: +*-***-**-**-**, Xxxxxx: $***, Xxxx: xxxxxx, Xxxxx: x'});
     });
   });
 
@@ -30,13 +32,14 @@ describe('json-mask', () => {
       assert.deepEqual(mask({a: 201}), {a: '***'});
       assert.deepEqual(mask({a: -12345}), {a: '-*****'});
       assert.deepEqual(mask({a: 0}), {a: '*'});
+      assert.deepEqual(mask({a: new Number(99)}), {a: '**'});
     });
 
     it('should mask real numbers with *', () => {
-      assert.deepEqual(mask({a: 0.004}), {a: '*.***'});
       assert.deepEqual(mask({a: 12.75}), {a: '**.**'});
       assert.deepEqual(mask({a: 9.00000000081}), {a: '*.***********'});
       assert.deepEqual(mask({a: -73917092743.8}), {a: '-***********.*'});
+      assert.deepEqual(mask({a: new Number(0.004)}), {a: '*.***'});
     });
 
     it('should mask boundary number values with *', () => {
@@ -55,7 +58,7 @@ describe('json-mask', () => {
     });
   });
 
-  it('should not mask a boolean', () => {
+  it('should not mask booleans', () => {
     assert.deepEqual(mask({a: true, b: false}), {a: true, b: false});
   });  
 
@@ -65,5 +68,11 @@ describe('json-mask', () => {
 
   it('should mask properties deeply', () => {
     assert.deepEqual(mask({foo: {bar: {a: 123, b: '!?%'}}, c: ['sensitive']}), {foo: {bar: {a: '***', b: '!?%'}}, c: ['xxxxxxxxx']});
+  });
+
+  it('should properly handle empty object and null as an input', () => {
+    assert.deepEqual(mask({}), {});
+    assert.deepEqual(mask(null), null);
+    assert.deepEqual(mask(undefined), undefined);
   });
 });
