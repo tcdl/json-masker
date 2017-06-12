@@ -26,6 +26,14 @@ describe('json-mask', () => {
     assert.deepEqual(mask({a: 201}), {a: '***'});
   });
 
+  it('should not mask a boolean', () => {
+    assert.deepEqual(mask({a: true, b: false}), {a: true, b: false});
+  });  
+
+  it('should not mask null and undefined', () => {
+    assert.deepEqual(mask({a: null, b: undefined}), {a: null, b: undefined});
+  });  
+
   it('should mask properties deeply', () => {
     assert.deepEqual(mask({foo: {bar: {a: 123, b: '!?%'}}, c: ['sensitive']}), {foo: {bar: {a: '***', b: '!?%'}}, c: ['xxxxxxxxx']});
   });
