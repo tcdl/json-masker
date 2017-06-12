@@ -1,7 +1,7 @@
 const _ = require('lodash');
 
 module.exports = (target) => {
-  return _.cloneDeepWith(target, (value, key) => {
+  return _.cloneDeepWith(target, (value) => {
     if (typeof(value) === 'string' || value instanceof String) {
       return maskString(value);
     }
@@ -12,10 +12,10 @@ module.exports = (target) => {
 };
 
 const digit = /\d/g;
-const upperCaseBaseLatin = /[A-Z]/g;
+const upperCaseLatin1 = /[A-Z]/g;
 const notPunctuation = /[^X\s!-/:-@[-`{-~]/g;
 
-const maskString = (value) => value.replace(digit, '*').replace(upperCaseBaseLatin, 'X').replace(notPunctuation, 'x');
+const maskString = (value) => value.replace(digit, '*').replace(upperCaseLatin1, 'X').replace(notPunctuation, 'x');
 
 const maskNumber = (value) => {
   if (Number.isNaN(value) || !Number.isFinite(value)) {
