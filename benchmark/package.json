@@ -1,0 +1,14 @@
+{
+  "name": "perf",
+  "version": "1.0.0",
+  "description": "",
+  "main": "perf.js",
+  "scripts": {
+    "test": "node perf.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "benchmark": "^2.1.4"
+  }
+}
