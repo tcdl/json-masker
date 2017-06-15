@@ -4,7 +4,7 @@
   "description": "",
   "main": "perf.js",
   "scripts": {
-    "test": "node perf.js"
+    "test": "node benchmark.js"
   },
   "author": "",
   "license": "ISC",
