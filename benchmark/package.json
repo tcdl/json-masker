@@ -1,13 +1,13 @@
 {
-  "name": "perf",
-  "version": "1.0.0",
-  "description": "",
-  "main": "perf.js",
+  "name": "json-masker-benchmark",
   "scripts": {
     "test": "node benchmark.js"
   },
-  "author": "",
-  "license": "ISC",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tcdl/json-masker.git"
+  },
   "dependencies": {
     "benchmark": "^2.1.4"
   }
