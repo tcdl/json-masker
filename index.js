@@ -1,7 +1,7 @@
-const _ = require('lodash');
+const cloneDeepWith = require('lodash.clonedeepwith');
 
 module.exports = (target) => {
-  return _.cloneDeepWith(target, (value) => {
+  return cloneDeepWith(target, (value) => {
     if (typeof(value) === 'string' || value instanceof String) {
       return maskString(value);
     }
