@@ -1,0 +1,12 @@
+language: node_js
+node_js:
+- '7'
+deploy:
+  provider: npm
+  email: integration-dev@thomascookonline.com
+  api_key:
+    secure: fZsfOc7zFDumnug9KZZQc2AQoiGbv/K0wB9KfeyAwYIYhze2xl4wFSfdaM5U1wmj23YHfF408iqupT/u46bym2uQdvfwnGfWzw0ke7xga1W5G3Mo6jlm5kK+xV7k+zf28uaRDtwBLtW/FxoBsMlqmrRbEqsDeRiOZ2/CRApLm/QUgYiGaEJjVldLRIZ0glhU5A6N2JZ54Qa20pPOIo19+dycO5KVQx1eWOnbNUhES3hnuOIokE0UbG1rAAavmtR/UiZBfeSCspyc8ViGDXqj0j1kU4PNs/AlfnISI/j+8oSkCXifbgc7d+3Y33ZTPpp2fqI2dIxhRNwJ5oJ5qwixPn9PDXqdsJ6G6JhrUd1ppIqYf0feNZUWuCBUhIu5HPUbHjmZ4iI3pbqd6BVIjeayUpwZ1AaaDxfoyzJwSq6E1qiM9z7iQgdpJEybWzKhte5LDdTn+UO6e9OokauVdalDK4WoNUk9hZyP1/99i/3htLux6lTSro79qLQetnbfHwlRHrDvioaFqGN/DwqsKh8j4EXQw7zL9ILqEu/JKvu/A7izwpmo4d0nmDvqOX3NucxsQPEMgGJrivwqoqozk914fFQYraP/g36ScpVzusy7FfDwYTjfi/ilPX5XQ49XFJP+VMLlqAaM0yO2T5BjnZynJCQph7gFEhmb9zpo6l47hLs=
+  on:
+    tags: true
+    repo: tcdl/json-masker
+    node: '7'
