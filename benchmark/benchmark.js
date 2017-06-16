@@ -12,11 +12,11 @@ console.log('Sample\t\tSize\tExecutions/sec\t\tAvg exec time (ms)');
   './sample3.json'
 
 ].forEach((file) => {
-  const size = Math.ceil(fs.statSync(file).size / 1000);
+  const size = Math.ceil(fs.statSync(file).size / 1024);
   const sample = require(file);
   new Benchmark(file, () => mask(sample), {
     onComplete: function () {
-      console.log(`${this.name}\t${size}kb\t${this.hz}\t${1000 / this.hz}`);
+      console.log(`${this.name}\t${size}kB\t${this.hz}\t${1000 / this.hz}`);
     }
   }).run();
 });
