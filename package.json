@@ -1,7 +1,7 @@
 {
   "name": "json-masker",
   "version": "0.1.0",
-  "description": "A library that allows to mask field values in a JSON",
+  "description": "A library for masking field values in JSON",
   "main": "index.js",
   "scripts": {
     "test": "mocha test.js"
