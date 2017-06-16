@@ -2,12 +2,12 @@
 
 A library for masking field values in JSON. Useful when there is a need to log JSON which potentially contains sensitive data such as PII.
 
-# Installation
+## Installation
 ```
-npm install json-masker
+$ npm install json-masker
 ```
 
-# Usage
+## Usage
 ```js
 const mask = require('json-masker');
 const maskedJson = mask({ /* ... */ });
@@ -23,7 +23,7 @@ app.post('/customers', (req, res) => {
 });
 ```
 
-# Masking strategy
+## Masking strategy
 Example of input:
 ```json
 {
@@ -68,7 +68,7 @@ Output:
   "ipAddress": "***.***.***.***"
 }
 ```
-## Rules
+### Rules
 1. strings
     * whitespaces remain unchanged 
     * punctuation marks (non-alphanumeric characters of [latin-1](http://jrgraphix.net/r/Unicode/0020-007F)) remain unchanged
