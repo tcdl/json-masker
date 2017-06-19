@@ -1,7 +1,7 @@
 const mask = require('./index');
 const {assert} = require('chai');
 
-describe('json-mask', () => {
+describe('json-masker', () => {
   describe('strings', () => {
     it('should mask latin-1 letters with X and x', () => {
       assert.deepEqual(mask({a: 'Qwerty'}), {a: 'Xxxxxx'});
