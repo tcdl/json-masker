@@ -75,4 +75,29 @@ describe('json-masker', () => {
     assert.deepEqual(mask(null), null);
     assert.deepEqual(mask(undefined), undefined);
   });
+
+  it('should not mask fields listed in JSON_MASKER_WHITELIST env var', () => {
+    process.env.JSON_MASKER_WHITELIST = 'myField,FIELD2,nonExistingField';
+    var inJson = {
+      myField: 'Hi',
+      a: '8301975624',
+      nestedObj: {
+        b: 'Qwerty',
+        field2: 123
+      }
+    };
+    var expectedOutJson = {
+      myField: 'Hi',
+      a: '**********',
+      nestedObj: {
+        b: 'Xxxxxx',
+        field2: 123
+      }
+    };
+    try{
+      assert.deepEqual(mask(inJson), expectedOutJson);
+    } finally {
+      delete process.env.JSON_MASKER_WHITELIST; //remove env var to not affect the other tests
+    }
+  });
 });

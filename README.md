@@ -23,6 +23,13 @@ app.post('/customers', (req, res) => {
 });
 ```
 
+## Configuration
+### Whitelisting
+Sometimes we are sure that some field will never contain the data needs to be masked. Moreover, the field's value could be very useful in logs for example
+for debugging purposes. json-masker library supports whitelisting to cover such cases. The configuration is carried out by env variable.
+JSON_MASKER_WHITELIST=field1,field2 (without spaces between values). The values should never be masked no matter where we find these keys in json structure.
+The whitelisting is case insensitive.
+
 ## Masking strategy
 Example of input:
 ```json
@@ -78,3 +85,4 @@ Output:
 2. numbers are converted to strings where each 1-9 character is replaced with `*` (e.g. `125` becomes `"***"` or `3.95` becomes `"*.**"`) 
 3. booleans: remain unchanged
 4. nulls: remain unchanged
+5. JSON_MASKER_WHITELIST env var defines the set of not masked fields listed by comma

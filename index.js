@@ -1,7 +1,10 @@
 const cloneDeepWith = require('lodash.clonedeepwith');
 
 module.exports = (target) => {
-  return cloneDeepWith(target, (value) => {
+  const whiteListedFields = process.env.JSON_MASKER_WHITELIST ? process.env.JSON_MASKER_WHITELIST.toUpperCase().split(','): [];
+  return cloneDeepWith(target, (value, key) => {
+    if (key && whiteListedFields.includes(key.toUpperCase()))
+      return value;
     if (typeof(value) === 'string' || value instanceof String) {
       return maskString(value);
     }
