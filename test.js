@@ -1,84 +1,85 @@
-const mask = require('./index');
+const Masker = require('./masker');
 const {assert} = require('chai');
+
+const masker = new Masker();
 
 describe('json-masker', () => {
   describe('strings', () => {
     it('should mask latin-1 letters with X and x', () => {
-      assert.deepEqual(mask({a: 'Qwerty'}), {a: 'Xxxxxx'});
-      assert.deepEqual(mask({a: new String('Azerty')}), {a: 'Xxxxxx'});
+      assert.deepEqual(masker.mask({a: 'Qwerty'}), {a: 'Xxxxxx'});
+      assert.deepEqual(masker.mask({a: new String('Azerty')}), {a: 'Xxxxxx'});
     });
     
     it('should mask digits with *', () => {
-      assert.deepEqual(mask({a: '8301975624'}), {a: '**********'});
+      assert.deepEqual(masker.mask({a: '8301975624'}), {a: '**********'});
     });
 
     it('should not mask punctuation and common signs', () => {
-      assert.deepEqual(mask({a: '-+.,!?@%$[]()'}), {a: '-+.,!?@%$[]()'});
+      assert.deepEqual(masker.mask({a: '-+.,!?@%$[]()'}), {a: '-+.,!?@%$[]()'});
     });
 
     it('should mask chars that are not latin-1, digits or punctuation with x', () => {
-      assert.deepEqual(mask({a: 'Ĕőєחβ'}), {a: 'xxxxx'});
-      assert.deepEqual(mask({a: '♛☼√'}), {a: 'xxx'});
+      assert.deepEqual(masker.mask({a: 'Ĕőєחβ'}), {a: 'xxxxx'});
+      assert.deepEqual(masker.mask({a: '♛☼√'}), {a: 'xxx'});
     });
 
     it('should mask complex string', () => {
-      assert.deepEqual(mask({a: 'Phone: +1-313-85-93-62, Salary: $100, Name: Κοτζιά, Photo: ☺'}),
+      assert.deepEqual(masker.mask({a: 'Phone: +1-313-85-93-62, Salary: $100, Name: Κοτζιά, Photo: ☺'}),
                        {a: 'Xxxxx: +*-***-**-**-**, Xxxxxx: $***, Xxxx: xxxxxx, Xxxxx: x'});
     });
   });
 
   describe('numbers', () => {
     it('should mask integer numbers with *', () => {
-      assert.deepEqual(mask({a: 201}), {a: '***'});
-      assert.deepEqual(mask({a: -12345}), {a: '-*****'});
-      assert.deepEqual(mask({a: 0}), {a: '*'});
-      assert.deepEqual(mask({a: new Number(99)}), {a: '**'});
+      assert.deepEqual(masker.mask({a: 201}), {a: '***'});
+      assert.deepEqual(masker.mask({a: -12345}), {a: '-*****'});
+      assert.deepEqual(masker.mask({a: 0}), {a: '*'});
+      assert.deepEqual(masker.mask({a: new Number(99)}), {a: '**'});
     });
 
     it('should mask real numbers with *', () => {
-      assert.deepEqual(mask({a: 12.75}), {a: '**.**'});
-      assert.deepEqual(mask({a: 9.00000000081}), {a: '*.***********'});
-      assert.deepEqual(mask({a: -73917092743.8}), {a: '-***********.*'});
-      assert.deepEqual(mask({a: new Number(0.004)}), {a: '*.***'});
+      assert.deepEqual(masker.mask({a: 12.75}), {a: '**.**'});
+      assert.deepEqual(masker.mask({a: 9.00000000081}), {a: '*.***********'});
+      assert.deepEqual(masker.mask({a: -73917092743.8}), {a: '-***********.*'});
+      assert.deepEqual(masker.mask({a: new Number(0.004)}), {a: '*.***'});
     });
 
     it('should mask boundary number values with *', () => {
-      assert.deepEqual(mask({a: Number.MAX_SAFE_INTEGER}), {a: '****************'});
-      assert.deepEqual(mask({a: Number.MIN_SAFE_INTEGER}), {a: '-****************'});
-      assert.deepEqual(mask({a: 1e+120}), {a: '*e+***'});
-      assert.deepEqual(mask({a: 1e-150}), {a: '*e-***'});
-      assert.deepEqual(mask({a: Number.MAX_VALUE}), {a: '*.****************e+***'});
-      assert.deepEqual(mask({a: Number.MIN_VALUE}), {a: '*e-***'});
+      assert.deepEqual(masker.mask({a: Number.MAX_SAFE_INTEGER}), {a: '****************'});
+      assert.deepEqual(masker.mask({a: Number.MIN_SAFE_INTEGER}), {a: '-****************'});
+      assert.deepEqual(masker.mask({a: 1e+120}), {a: '*e+***'});
+      assert.deepEqual(masker.mask({a: 1e-150}), {a: '*e-***'});
+      assert.deepEqual(masker.mask({a: Number.MAX_VALUE}), {a: '*.****************e+***'});
+      assert.deepEqual(masker.mask({a: Number.MIN_VALUE}), {a: '*e-***'});
     });
     
     it('should not mask unrepresentable numbers', () => {
-      assert.deepEqual(mask({a: NaN}), {a: NaN});
-      assert.deepEqual(mask({a: Infinity}), {a: Infinity});
-      assert.deepEqual(mask({a: -Infinity}), {a: -Infinity});
+      assert.deepEqual(masker.mask({a: NaN}), {a: NaN});
+      assert.deepEqual(masker.mask({a: Infinity}), {a: Infinity});
+      assert.deepEqual(masker.mask({a: -Infinity}), {a: -Infinity});
     });
   });
 
   it('should not mask booleans', () => {
-    assert.deepEqual(mask({a: true, b: false}), {a: true, b: false});
+    assert.deepEqual(masker.mask({a: true, b: false}), {a: true, b: false});
   });  
 
   it('should not mask null and undefined', () => {
-    assert.deepEqual(mask({a: null, b: undefined}), {a: null, b: undefined});
+    assert.deepEqual(masker.mask({a: null, b: undefined}), {a: null, b: undefined});
   });  
 
   it('should mask properties deeply', () => {
-    assert.deepEqual(mask({foo: {bar: {a: 123, b: '!?%'}}, c: ['sensitive']}), {foo: {bar: {a: '***', b: '!?%'}}, c: ['xxxxxxxxx']});
+    assert.deepEqual(masker.mask({foo: {bar: {a: 123, b: '!?%'}}, c: ['sensitive']}), {foo: {bar: {a: '***', b: '!?%'}}, c: ['xxxxxxxxx']});
   });
 
   it('should properly handle empty object and null as an input', () => {
-    assert.deepEqual(mask({}), {});
-    assert.deepEqual(mask(null), null);
-    assert.deepEqual(mask(undefined), undefined);
+    assert.deepEqual(masker.mask({}), {});
+    assert.deepEqual(masker.mask(null), null);
+    assert.deepEqual(masker.mask(undefined), undefined);
   });
 
-  it('should not mask fields listed in JSON_MASKER_WHITELIST env var', () => {
-    process.env.JSON_MASKER_WHITELIST = 'myField,FIELD2,nonExistingField';
-    var inJson = {
+  describe('whitelisting', () => {
+    const inJson = {
       myField: 'Hi',
       a: '8301975624',
       nestedObj: {
@@ -86,7 +87,7 @@ describe('json-masker', () => {
         field2: 123
       }
     };
-    var expectedOutJson = {
+    const expectedOutJson = {
       myField: 'Hi',
       a: '**********',
       nestedObj: {
@@ -94,10 +95,24 @@ describe('json-masker', () => {
         field2: 123
       }
     };
-    try{
-      assert.deepEqual(mask(inJson), expectedOutJson);
-    } finally {
-      delete process.env.JSON_MASKER_WHITELIST; //remove env var to not affect the other tests
-    }
+
+    it('should not mask fields listed in JSON_MASKER_WHITELIST env var', () => {
+      process.env.JSON_MASKER_WHITELIST = 'myField,FIELD2,nonExistingField';
+      try{
+        assert.deepEqual(masker.mask(inJson), expectedOutJson);
+      } finally {
+        delete process.env.JSON_MASKER_WHITELIST; //remove env var to not affect the other tests
+      }
+    });
+
+    it('should be configurable via options with the higher precedence', () => {
+      const masker = new Masker({whitelist: ['myField','FIELD2','nonExistingField']});
+      process.env.JSON_MASKER_WHITELIST = 'yetAnotherField';
+      try{
+        assert.deepEqual(masker.mask(inJson), expectedOutJson);
+      } finally {
+        delete process.env.JSON_MASKER_WHITELIST; //remove env var to not affect the other tests
+      }
+    });
   });
 });

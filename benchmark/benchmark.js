@@ -1,7 +1,7 @@
 const Benchmark = require('benchmark');
 const fs = require('fs');
 
-const mask = require('../index');
+const mask = require('../masker');
 
 console.log('Sample\t\tSize\tExecutions/sec\t\tAvg exec time (ms)');
 

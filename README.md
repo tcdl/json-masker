@@ -9,21 +9,23 @@ $ npm install json-masker
 
 ## Usage
 ```js
-const mask = require('json-masker');
-const maskedJson = mask({ /* ... */ });
+const Masker = require('json-masker');
+const maskerOptions = {/*...*/};
+const masker = new Masker(maskerOptions);
+const maskedJson = masker.mask({ /* ... */ });
 ```
 Logging incoming HTTP requests:
 ```js
 // ...
-const mask = require('json-masker');
-
 app.post('/customers', (req, res) => {
-  logger.debug(mask(req.body));
+  logger.debug(masker.mask(req.body));
   // ...
 });
 ```
 
 ## Configuration
+
+
 ### Whitelisting
 Sometimes we are sure that some field will never contain the data needs to be masked. Moreover, the field's value could be very useful in logs for example
 for debugging purposes. json-masker library supports whitelisting to cover such cases. The configuration is carried out by env variable.
