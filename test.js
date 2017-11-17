@@ -72,6 +72,10 @@ describe('json-masker', () => {
     assert.deepEqual(masker.mask({foo: {bar: {a: 123, b: '!?%'}}, c: ['sensitive']}), {foo: {bar: {a: '***', b: '!?%'}}, c: ['xxxxxxxxx']});
   });
 
+  it('should mask arrays', () => {
+    assert.deepEqual(masker.mask({arr: [{a: 123}, "abc"]}), {arr: [{a: '***'}, "xxx"]});
+  });
+
   it('should properly handle empty object and null as an input', () => {
     assert.deepEqual(masker.mask({}), {});
     assert.deepEqual(masker.mask(null), null);
