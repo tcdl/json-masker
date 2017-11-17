@@ -7,22 +7,8 @@ class Masker {
       this.options.whitelist = options.whitelist.map(fieldName => fieldName.toUpperCase());
   }
 
-  /**
-   * Tries to get whitelisted field names from options first. If they are absent in options, when reads the
-   * env variable named JSON_MASKER_WHITELIST
-   * @returns {Array}
-   * @private
-   */
-  _getWhitelistedFields() {
-    return this.options && this.options.whitelist
-      ? this.options.whitelist
-      : process.env.JSON_MASKER_WHITELIST
-        ? process.env.JSON_MASKER_WHITELIST.toUpperCase().split(',')
-        : [];
-  }
-
   mask(target) {
-    const whiteListedFields = this._getWhitelistedFields();
+    const whiteListedFields = this.options && this.options.whitelist ? this.options.whitelist : [];
     return cloneDeepWith(target, (value, key) => {
       if (key && whiteListedFields.includes(key.toUpperCase()))
         return value;

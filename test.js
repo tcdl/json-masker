@@ -96,23 +96,10 @@ describe('json-masker', () => {
       }
     };
 
-    it('should not mask fields listed in JSON_MASKER_WHITELIST env var', () => {
-      process.env.JSON_MASKER_WHITELIST = 'myField,FIELD2,nonExistingField';
-      try{
-        assert.deepEqual(masker.mask(inJson), expectedOutJson);
-      } finally {
-        delete process.env.JSON_MASKER_WHITELIST; //remove env var to not affect the other tests
-      }
-    });
-
-    it('should be configurable via options with the higher precedence', () => {
+    it('should be configurable via options', () => {
       const masker = new Masker({whitelist: ['myField','FIELD2','nonExistingField']});
       process.env.JSON_MASKER_WHITELIST = 'yetAnotherField';
-      try{
-        assert.deepEqual(masker.mask(inJson), expectedOutJson);
-      } finally {
-        delete process.env.JSON_MASKER_WHITELIST; //remove env var to not affect the other tests
-      }
+      assert.deepEqual(masker.mask(inJson), expectedOutJson);
     });
   });
 });

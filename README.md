@@ -30,14 +30,12 @@ The preferred configuration way is usage of json object - maskerOptions while co
     whitelist: ['node1', 'node2']
  }
  ```
- It contains only optional whitelist property for now. The library expects that the value of 'whitelist' will be an array of json node names to be excluded
- from masking. These node names are case-insensitive. Another way of whitelisting configuration is to set JSON_MASKER_WHITELIST env variable with comma
- separated node names. MaskerOptions object has a precedence over environment variables.
+ It contains only optional whitelist property for now. The value should be an array of strings (node names). This property is optional.
 
 ### Whitelisting
 Sometimes we are sure that some field will never contain the data needs to be masked. Moreover, the field's value could be very useful in logs for example
-for debugging purposes. json-masker library supports whitelisting to cover such cases. The configuration is carried out by env variable or options object described above.
-JSON_MASKER_WHITELIST=field1,field2 (without spaces between values). The values should never be masked no matter where we find these keys in json structure.
+for debugging purposes. json-masker library supports whitelisting to cover such cases. The library expects that the value of 'whitelist' will be an array
+of json node names to be excluded from masking. The values should never be masked no matter where we find these keys in json structure.
 The whitelisting is case-insensitive.
 
 ## Masking strategy
