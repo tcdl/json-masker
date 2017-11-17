@@ -9,19 +9,34 @@ $ npm install json-masker
 
 ## Usage
 ```js
-const mask = require('json-masker');
-const maskedJson = mask({ /* ... */ });
+const Masker = require('json-masker');
+const maskerOptions = {/*...*/};
+const masker = new Masker(maskerOptions);
+const maskedJson = masker.mask({ /* ... */ });
 ```
 Logging incoming HTTP requests:
 ```js
 // ...
-const mask = require('json-masker');
-
 app.post('/customers', (req, res) => {
-  logger.debug(mask(req.body));
+  logger.debug(masker.mask(req.body));
   // ...
 });
 ```
+
+## Configuration
+The preferred configuration way is usage of json object - maskerOptions while construction of Masker class instance.
+ ```json
+ {
+    whitelist: ['node1', 'node2']
+ }
+ ```
+ It contains only optional whitelist property for now. The value should be an array of strings (node names). This property is optional.
+
+### Whitelisting
+Sometimes we are sure that some field will never contain the data needs to be masked. Moreover, the field's value could be very useful in logs for example
+for debugging purposes. json-masker library supports whitelisting to cover such cases. The library expects that the value of 'whitelist' will be an array
+of json node names to be excluded from masking. The values should never be masked no matter where we find these keys in json structure.
+The whitelisting is case-insensitive.
 
 ## Masking strategy
 Example of input:
