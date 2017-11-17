@@ -10,7 +10,7 @@ class Masker {
   mask(target) {
     const whiteListedFields = this.options && this.options.whitelist ? this.options.whitelist : [];
     return cloneDeepWith(target, (value, key) => {
-      if (key && whiteListedFields.includes(key.toUpperCase()))
+      if (typeof(key) === 'string' && whiteListedFields.includes(key.toUpperCase()))
         return value;
       if (typeof(value) === 'string' || value instanceof String) {
         return maskString(value);
