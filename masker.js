@@ -2,13 +2,16 @@ const cloneDeepWith = require('lodash.clonedeepwith');
 
 class Masker {
   constructor(options) {
-    this.options = options;
+    this.options = options || {};
     if (options && options.whitelist && Array.isArray(options.whitelist))
       this.options.whitelist = options.whitelist.map(fieldName => fieldName.toUpperCase());
   }
 
   mask(target) {
-    const whiteListedFields = this.options && this.options.whitelist ? this.options.whitelist : [];
+    if (this.options.enabled === false) {
+      return target;
+    }
+    const whiteListedFields = this.options.whitelist ? this.options.whitelist : [];
     return cloneDeepWith(target, (value, key) => {
       if (typeof(key) === 'string' && whiteListedFields.includes(key.toUpperCase()))
         return value;

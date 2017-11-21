@@ -24,19 +24,17 @@ app.post('/customers', (req, res) => {
 ```
 
 ## Configuration
-The preferred configuration way is usage of json object - maskerOptions while construction of Masker class instance.
- ```json
- {
-    whitelist: ['node1', 'node2']
- }
- ```
- It contains only optional whitelist property for now. The value should be an array of strings (node names). This property is optional.
+json-masker can be configured via options object passed into constructor. Possible parameters are:
+ * `whitelist`. A list of whitelisted field names. Wherever a field with a whitelisted name appears in a JSON structure, its value will _not_ be masked. The whitelist is case-insensitive. Default: `[]`
+ * `enabled`. A boolean flag that toggles masking functionality. If set to `false`, none of the fields will be masked. Might be useful for debug purposes. Default: `true`
 
-### Whitelisting
-Sometimes we are sure that some field will never contain the data needs to be masked. Moreover, the field's value could be very useful in logs for example
-for debugging purposes. json-masker library supports whitelisting to cover such cases. The library expects that the value of 'whitelist' will be an array
-of json node names to be excluded from masking. The values should never be masked no matter where we find these keys in json structure.
-The whitelisting is case-insensitive.
+### Example
+```js
+const masker = new Masker({
+  whitelist: ['field1', 'field2'],
+  enabled: false
+});
+```
 
 ## Masking strategy
 Example of input:
