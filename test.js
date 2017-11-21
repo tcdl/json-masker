@@ -73,7 +73,7 @@ describe('json-masker', () => {
   });
 
   it('should mask arrays', () => {
-    assert.deepEqual(masker.mask({arr: [{a: 123}, "abc"]}), {arr: [{a: '***'}, "xxx"]});
+    assert.deepEqual(masker.mask({arr: [{a: 123}, 'abc']}), {arr: [{a: '***'}, 'xxx']});
   });
 
   it('should properly handle empty object and null as an input', () => {
@@ -102,8 +102,12 @@ describe('json-masker', () => {
 
     it('should be configurable via options', () => {
       const masker = new Masker({whitelist: ['myField','FIELD2','nonExistingField']});
-      process.env.JSON_MASKER_WHITELIST = 'yetAnotherField';
       assert.deepEqual(masker.mask(inJson), expectedOutJson);
     });
+  });
+
+  it('should not mask any field if set enabled=false', () => {
+    const masker = new Masker({enabled: false});
+    assert.deepEqual(masker.mask({a: 'abc', nested: {b: 'xyz'}}), {a: 'abc', nested: {b: 'xyz'}});
   });
 });
