@@ -32,7 +32,7 @@ json-masker can be configured via options object passed into constructor. Possib
 ```js
 const masker = new Masker({
   whitelist: ['field1', 'field2'],
-  enabled: !isDebug()
+  enabled: false
 });
 ```
 
