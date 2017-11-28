@@ -1,17 +1,15 @@
 const cloneDeepWith = require('lodash.clonedeepwith');
 
-class Masker {
-  constructor(options) {
-    this.options = options || {};
-    if (options && options.whitelist && Array.isArray(options.whitelist))
-      this.options.whitelist = options.whitelist.map(fieldName => fieldName.toUpperCase());
-  }
+module.exports = function create(opts) {
+  const options = cloneDeepWith(opts) || {};
+  if (options && options.whitelist && Array.isArray(options.whitelist))
+    options.whitelist = options.whitelist.map(fieldName => fieldName.toUpperCase());
 
-  mask(target) {
-    if (this.options.enabled === false) {
+  return function mask(target) {
+    if (options.enabled === false) {
       return target;
     }
-    const whiteListedFields = this.options.whitelist ? this.options.whitelist : [];
+    const whiteListedFields = options.whitelist ? options.whitelist : [];
     return cloneDeepWith(target, (value, key) => {
       if (typeof(key) === 'string' && whiteListedFields.includes(key.toUpperCase()))
         return value;
@@ -22,8 +20,8 @@ class Masker {
         return maskNumber(value);
       }
     })
-  }
-}
+  };
+};
 
 const digit = /\d/g;
 const upperCaseLatin1 = /[A-Z]/g;
@@ -37,6 +35,3 @@ const maskNumber = (value) => {
   }
   return value.toString().replace(digit, '*');
 };
-
-module.exports = Masker;
-
