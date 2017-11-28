@@ -9,16 +9,16 @@ $ npm install json-masker
 
 ## Usage
 ```js
-const Masker = require('json-masker');
+const masker = require('json-masker');
 const maskerOptions = {/*...*/};
-const masker = new Masker(maskerOptions);
-const maskedJson = masker.mask({ /* ... */ });
+const mask = masker(maskerOptions);
+const maskedJson = mask({ /* ... */ });
 ```
 Logging incoming HTTP requests:
 ```js
 // ...
 app.post('/customers', (req, res) => {
-  logger.debug(masker.mask(req.body));
+  logger.debug(mask(req.body));
   // ...
 });
 ```
@@ -30,7 +30,7 @@ json-masker can be configured via options object passed into constructor. Possib
 
 ### Example
 ```js
-const masker = new Masker({
+const mask = masker({
   whitelist: ['field1', 'field2'],
   enabled: false
 });
