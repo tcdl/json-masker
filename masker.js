@@ -1,3 +1,5 @@
+const jp = require('jsonpath');
+
 module.exports = function create(opts) {
   const options = Object.assign({}, opts);
   // if (options && options.whitelist && Array.isArray(options.whitelist))
@@ -20,12 +22,20 @@ module.exports = function create(opts) {
     if (options.enabled === false) {
       return target;
     }
+    const whitelistedPaths = whitelistedJsonPaths.reduce((accum, path) => {
+      Array.prototype.push.apply(accum, jp.paths(target, path));
+      return accum;
+    }, []).map(path => path.join('.'));
+
     return traverse(target);
 
-    function traverse(value, path) {
-      if (path) {
+    function traverse(value, path = '$') {
+      if (path !== '$') {
         const key = path.split('.').pop();
         if (whitelistedKeys.includes(key.toUpperCase())) {
+          return value;
+        }
+        if (whitelistedPaths.includes(path)) {
           return value;
         }
       }
@@ -45,7 +55,7 @@ module.exports = function create(opts) {
       const objNew = (value instanceof Array) ? [] : {};
       for (let key in value) {
         if (value.hasOwnProperty(key)) {
-          objNew[key] = traverse(value[key], path ? `${path}.${key}` : key);
+          objNew[key] = traverse(value[key], path + '.' + key);
         }
       }
       return objNew;
