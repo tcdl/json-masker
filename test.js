@@ -9,7 +9,7 @@ describe('json-masker', () => {
       assert.deepEqual(mask({a: 'Qwerty'}), {a: 'Xxxxxx'});
       assert.deepEqual(mask({a: new String('Azerty')}), {a: 'Xxxxxx'});
     });
-    
+
     it('should mask digits with *', () => {
       assert.deepEqual(mask({a: '8301975624'}), {a: '**********'});
     });
@@ -25,7 +25,7 @@ describe('json-masker', () => {
 
     it('should mask complex string', () => {
       assert.deepEqual(mask({a: 'Phone: +1-313-85-93-62, Salary: $100, Name: Κοτζιά, Photo: ☺'}),
-                       {a: 'Xxxxx: +*-***-**-**-**, Xxxxxx: $***, Xxxx: xxxxxx, Xxxxx: x'});
+        {a: 'Xxxxx: +*-***-**-**-**, Xxxxxx: $***, Xxxx: xxxxxx, Xxxxx: x'});
     });
   });
 
@@ -52,7 +52,7 @@ describe('json-masker', () => {
       assert.deepEqual(mask({a: Number.MAX_VALUE}), {a: '*.****************e+***'});
       assert.deepEqual(mask({a: Number.MIN_VALUE}), {a: '*e-***'});
     });
-    
+
     it('should not mask unrepresentable numbers', () => {
       assert.deepEqual(mask({a: NaN}), {a: NaN});
       assert.deepEqual(mask({a: Infinity}), {a: Infinity});
@@ -62,14 +62,17 @@ describe('json-masker', () => {
 
   it('should not mask booleans', () => {
     assert.deepEqual(mask({a: true, b: false}), {a: true, b: false});
-  });  
+  });
 
   it('should not mask null and undefined', () => {
     assert.deepEqual(mask({a: null, b: undefined}), {a: null, b: undefined});
-  });  
+  });
 
   it('should mask properties deeply', () => {
-    assert.deepEqual(mask({foo: {bar: {a: 123, b: '!?%'}}, c: ['sensitive']}), {foo: {bar: {a: '***', b: '!?%'}}, c: ['xxxxxxxxx']});
+    assert.deepEqual(mask({foo: {bar: {a: 123, b: '!?%'}}, c: ['sensitive']}), {
+      foo: {bar: {a: '***', b: '!?%'}},
+      c: ['xxxxxxxxx']
+    });
   });
 
   it('should mask arrays', () => {
@@ -83,26 +86,69 @@ describe('json-masker', () => {
   });
 
   describe('whitelisting', () => {
-    const inJson = {
-      myField: 'Hi',
-      a: '8301975624',
-      nestedObj: {
-        b: 'Qwerty',
-        field2: 123
-      }
-    };
-    const expectedOutJson = {
-      myField: 'Hi',
-      a: '**********',
-      nestedObj: {
-        b: 'Xxxxxx',
-        field2: 123
-      }
-    };
 
-    it('should be configurable via options', () => {
-      const mask = masker({whitelist: ['myField','FIELD2','nonExistingField']});
+    it('should whitelist fields by json-path', () => {
+      const inJson = {
+        name: 'salary list',
+        users: [
+          {name: 'Jorn', salary: 100},
+          {name: 'Laszlo', salary: 150}
+        ]
+      };
+      const expectedJson = {
+        name: 'salary list',
+        users: [
+          {name: 'Xxxx', salary: 100},
+          {name: 'Xxxxxx', salary: 150}
+        ]
+      };
+      const mask = masker({whitelist: ['$.users[*].salary', '$.name']});
+      assert.deepEqual(mask(inJson), expectedJson);
+    });
+
+    it('should whitelist fields by names', () => {
+      const inJson = {
+        myField: 'Hi',
+        a: '8301975624',
+        nestedObj: {
+          b: 'Qwerty',
+          field2: 123
+        }
+      };
+      const expectedOutJson = {
+        myField: 'Hi',
+        a: '**********',
+        nestedObj: {
+          b: 'Xxxxxx',
+          field2: 123
+        }
+      };
+
+      const mask = masker({whitelist: ['myField', 'FIELD2', 'nonExistingField']});
       assert.deepEqual(mask(inJson), expectedOutJson);
+    });
+
+    it('should whitelist fields by names and by json-path', () => {
+      const inJson = {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Basic eDp4Cg==',
+          'Content-Type': 'text/html'
+        }
+      };
+      const expectedJson = {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Xxxxx xXx*Xx==',
+          'Content-Type': 'text/html'
+        }
+      };
+      const mask = masker({whitelist: ['method', "$.headers['Content-Type']"]});
+      assert.deepEqual(mask(inJson), expectedJson);
+    });
+
+    it('should throw if whitelist is not an array', () => {
+      assert.throws(() => masker({whitelist: 'not an array'}), 'Whitelist must be an array');
     });
   });
 

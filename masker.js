@@ -2,15 +2,14 @@ const jp = require('jsonpath');
 
 module.exports = function create(opts) {
   const options = Object.assign({}, opts);
-  // if (options && options.whitelist && Array.isArray(options.whitelist))
-  // `    options.whitelist = options.whitelist.map(fieldName => fieldName.toUpperCase());
-  if (!options.whitelist) {
-    options.whitelist = [];
+
+  if (options.whitelist && !Array.isArray(options.whitelist)) {
+    throw new Error('Whitelist must be an array');
   }
 
   const whitelistedJsonPaths = [];
   const whitelistedKeys = [];
-  options.whitelist.forEach(item => {
+  (options.whitelist || []).forEach(item => {
     if (item.startsWith('$')) {
       whitelistedJsonPaths.push(item);
     } else {
@@ -27,9 +26,9 @@ module.exports = function create(opts) {
       return accum;
     }, []).map(path => path.join('.'));
 
-    return traverse(target);
+    return traverseAndMask(target);
 
-    function traverse(value, path = '$') {
+    function traverseAndMask(value, path = '$') {
       if (path !== '$') {
         const key = path.split('.').pop();
         if (whitelistedKeys.includes(key.toUpperCase())) {
@@ -39,6 +38,7 @@ module.exports = function create(opts) {
           return value;
         }
       }
+
       if (typeof(value) === 'string' || value instanceof String) {
         return maskString(value);
       }
@@ -52,13 +52,17 @@ module.exports = function create(opts) {
         return value;
       }
 
-      const objNew = (value instanceof Array) ? [] : {};
-      for (let key in value) {
-        if (value.hasOwnProperty(key)) {
-          objNew[key] = traverse(value[key], path + '.' + key);
+      if (typeof(value) === 'object') {
+        const valueNew = Array.isArray(value) ? [] : {};
+        for (let key in value) {
+          if (value.hasOwnProperty(key)) {
+            valueNew[key] = traverseAndMask(value[key], path + '.' + key);
+          }
         }
+        return valueNew;
       }
-      return objNew;
+
+      return value;
     }
   };
 };
