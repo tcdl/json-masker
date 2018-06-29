@@ -51,12 +51,17 @@ module.exports = function create(opts) {
       if (typeof(value) === 'undefined' || value === null) {
         return value;
       }
+      if (value.__inClone) {
+        return value;
+      }
 
       if (typeof(value) === 'object') {
         const valueNew = Array.isArray(value) ? [] : {};
         for (let key in value) {
           if (value.hasOwnProperty(key)) {
+            value.__inClone = true;
             valueNew[key] = traverseAndMask(value[key], path + '.' + key);
+            delete value.__inClone;
           }
         }
         return valueNew;

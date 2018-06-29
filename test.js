@@ -156,4 +156,11 @@ describe('json-masker', () => {
     const mask = masker({enabled: false});
     assert.deepEqual(mask({a: 'abc', nested: {b: 'xyz'}}), {a: 'abc', nested: {b: 'xyz'}});
   });
+
+  it('should handle circular references', () => {
+    const mask = masker();
+    const inJson = {};
+    inJson.a = inJson;
+    assert.deepEqual(mask(inJson), inJson);
+  });
 });
