@@ -24,14 +24,21 @@ app.post('/customers', (req, res) => {
 ```
 
 ## Configuration
-json-masker can be configured via options object passed into constructor. Possible parameters are:
- * `whitelist`. A list of whitelisted field names. Wherever a field with a whitelisted name appears in a JSON structure, its value will _not_ be masked. The whitelist is case-insensitive. Default: `[]`
+json-masker can be configured via options object passed into factory function. Possible parameters are:
+ * `whitelist`. A list of whitelisted fields. The values of whitelisted fields will _not_ be masked. Either a field name or a json-path can be specified. Field names are treated case-insensitive. For json-path see [documentation](https://github.com/dchester/jsonpath). Default: `[]`
  * `enabled`. A boolean flag that toggles masking functionality. If set to `false`, none of the fields will be masked. Might be useful for debug purposes. Default: `true`
 
 ### Example
 ```js
 const mask = masker({
-  whitelist: ['field1', 'field2'],
+  whitelist: [
+    /* by field name: */
+    'field1',
+    'field2',
+    /* by json-path: */
+    '$.myArray[1].someField',
+    '$..path.to.a.field'
+  ],
   enabled: false
 });
 ```

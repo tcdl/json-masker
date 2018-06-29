@@ -16,6 +16,6 @@
     "mocha": "^3.4.2"
   },
   "dependencies": {
-    "lodash.clonedeepwith": "^4.5.0"
+    "jsonpath": "^1.0.0"
   }
 }
