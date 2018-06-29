@@ -28,9 +28,8 @@ module.exports = function create(opts) {
 
     return traverseAndMask(target);
 
-    function traverseAndMask(value, path = '$') {
+    function traverseAndMask(value, path = '$', key) {
       if (path !== '$') {
-        const key = path.split('.').pop();
         if (whitelistedKeys.includes(key.toUpperCase())) {
           return value;
         }
@@ -51,7 +50,7 @@ module.exports = function create(opts) {
       if (typeof(value) === 'undefined' || value === null) {
         return value;
       }
-      if (value.__inClone) {
+      if (value.__inClone) { // skip circular references
         return value;
       }
 
@@ -60,7 +59,7 @@ module.exports = function create(opts) {
         for (let key in value) {
           if (value.hasOwnProperty(key)) {
             value.__inClone = true;
-            valueNew[key] = traverseAndMask(value[key], path + '.' + key);
+            valueNew[key] = traverseAndMask(value[key], path + '.' + key, key);
             delete value.__inClone;
           }
         }
