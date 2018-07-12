@@ -11,6 +11,7 @@ module.exports = function create(opts) {
   const whitelistedKeys = [];
   (options.whitelist || []).forEach(item => {
     if (item.startsWith('$')) {
+      jp.parse(item); // validate provided json-path
       whitelistedJsonPaths.push(item);
     } else {
       whitelistedKeys.push(item.toUpperCase());

@@ -163,4 +163,17 @@ describe('json-masker', () => {
     inJson.a = inJson;
     assert.deepEqual(mask(inJson), inJson);
   });
+
+  it('should throw if invalid json-path is provided', () => {
+    assert.throws(() => masker({whitelist: ['field1', '$.field2', '$=*invalid  _ /json]path']}));
+  });
+
+  it('should not modify input JSON', () => {
+    const inJson = {myField: 'Hi'};
+    const expectedOutJson = {myField: 'Xx'};
+
+    const mask = masker();
+    assert.deepEqual(mask(inJson), expectedOutJson);
+    assert.equal(inJson.myField, 'Hi');
+  });
 });
