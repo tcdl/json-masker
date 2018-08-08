@@ -4,12 +4,32 @@ module.exports = function create(opts) {
   const options = Object.assign({}, opts);
 
   if (options.whitelist && !Array.isArray(options.whitelist)) {
-    throw new Error('Whitelist must be an array');
+    throw new Error("'whitelist' must be an array");
   }
+
+  if (options.whitelists && !Array.isArray(options.whitelists)) {
+    throw new Error("'whitelists' must be an array");
+  }
+
+  const whitelists = [];
+
+  if (options.whitelist) {
+    whitelists.push(options.whitelist);
+  } else if (options.whitelists) {
+    Array.prototype.push.apply(whitelists, options.whitelists);
+  }
+
+  const mergedWhitelist = new Set();
+
+  whitelists.forEach(whitelist => {
+    whitelist.forEach(key => {
+      mergedWhitelist.add(key);
+    });
+  });
 
   const whitelistedJsonPaths = [];
   const whitelistedKeys = [];
-  (options.whitelist || []).forEach(item => {
+  mergedWhitelist.forEach(item => {
     if (item.startsWith('$')) {
       jp.parse(item); // validate provided json-path
       whitelistedJsonPaths.push(item);

@@ -148,7 +148,42 @@ describe('json-masker', () => {
     });
 
     it('should throw if whitelist is not an array', () => {
-      assert.throws(() => masker({whitelist: 'not an array'}), 'Whitelist must be an array');
+      assert.throws(() => masker({whitelist: 'not an array'}), "'whitelist' must be an array");
+    });
+
+    it('should throw if whitelists is not an array', () => {
+      assert.throws(() => masker({whitelists: 'not an array'}), "'whitelists' must be an array");
+    });
+  });
+
+  describe('multi-whitelisting', () => {
+    it('should accept multiple whitelists', () => {
+      const inJson = {
+        user: {
+          name: 'Jorn',
+          age: 31,
+          job: {
+            position: 'engineer',
+            salary: 100
+          }
+        }
+      };
+      const expectedJson = {
+        user: {
+          name: 'Xxxx',
+          age: 31,
+          job: {
+            position: 'engineer',
+            salary: 100
+          }
+        }
+      };
+
+      const userWhitelist = ['age'];
+      const jobWhitelist = ['salary', '$..position'];
+      const mask = masker({whitelists: [userWhitelist, jobWhitelist]});
+
+      assert.deepEqual(mask(inJson), expectedJson);
     });
   });
 
