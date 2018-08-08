@@ -147,43 +147,78 @@ describe('json-masker', () => {
       assert.deepEqual(mask(inJson), expectedJson);
     });
 
-    it('should throw if whitelist is not an array', () => {
-      assert.throws(() => masker({whitelist: 'not an array'}), "'whitelist' must be an array");
-    });
-
-    it('should throw if whitelists is not an array', () => {
-      assert.throws(() => masker({whitelists: 'not an array'}), "'whitelists' must be an array");
-    });
-  });
-
-  describe('multi-whitelisting', () => {
-    it('should accept multiple whitelists', () => {
+    it('should support whitelists represented as string', () => {
       const inJson = {
-        user: {
-          name: 'Jorn',
-          age: 31,
-          job: {
-            position: 'engineer',
-            salary: 100
-          }
+        myField: 'Hi',
+        a: '8301975624',
+        nestedObj: {
+          b: 'Qwerty',
+          field2: 123
         }
       };
-      const expectedJson = {
-        user: {
-          name: 'Xxxx',
-          age: 31,
-          job: {
-            position: 'engineer',
-            salary: 100
-          }
+      const expectedOutJson = {
+        myField: 'Hi',
+        a: '8301975624',
+        nestedObj: {
+          b: 'Xxxxxx',
+          field2: 123
         }
       };
 
-      const userWhitelist = ['age'];
-      const jobWhitelist = ['salary', '$..position'];
-      const mask = masker({whitelists: [userWhitelist, jobWhitelist]});
+      const mask = masker({whitelist: 'myField,FIELD2,a'});
+      assert.deepEqual(mask(inJson), expectedOutJson);
+    });
 
-      assert.deepEqual(mask(inJson), expectedJson);
+    it('should throw if whitelist is not an array or a string', () => {
+      assert.throws(() => masker({whitelist: {invalid: true}}));
+    });
+
+    describe('multiple whitelists', () => {
+
+      it('should accept multiple whitelists', () => {
+        const inJson = {
+          user: {
+            name: 'Jorn',
+            age: 31,
+            job: {
+              position: 'engineer',
+              salary: 100
+            },
+            address: {
+              country: 'Brazil',
+              city: 'São Paulo',
+              street: 'Rua Sader Macul, 741'
+            }
+          }
+        };
+        const expectedJson = {
+          user: {
+            name: 'Xxxx',
+            age: 31,
+            job: {
+              position: 'engineer',
+              salary: 100
+            },
+            address: {
+              country: 'Brazil',
+              city: 'São Paulo',
+              street: 'Xxx Xxxxx Xxxxx, ***'
+            }
+          }
+        };
+
+        const userWhitelist = ['age'];
+        const jobWhitelist = ['$..salary', '$..position'];
+        const addressWhitelist = 'city, country';
+
+        const mask = masker({whitelists: [userWhitelist, jobWhitelist, addressWhitelist]});
+
+        assert.deepEqual(mask(inJson), expectedJson);
+      });
+
+      it('should throw if whitelists is not an array', () => {
+        assert.throws(() => masker({whitelists: 'not an array'}));
+      });
     });
   });
 

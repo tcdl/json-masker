@@ -3,25 +3,27 @@ const jp = require('jsonpath');
 module.exports = function create(opts) {
   const options = Object.assign({}, opts);
 
-  if (options.whitelist && !Array.isArray(options.whitelist)) {
-    throw new Error("'whitelist' must be an array");
-  }
-
-  if (options.whitelists && !Array.isArray(options.whitelists)) {
-    throw new Error("'whitelists' must be an array");
-  }
-
   const whitelists = [];
 
   if (options.whitelist) {
     whitelists.push(options.whitelist);
   } else if (options.whitelists) {
+    if (!Array.isArray(options.whitelists)) {
+      throw new Error("'whitelists' option must be an array");
+    }
     Array.prototype.push.apply(whitelists, options.whitelists);
   }
 
   const mergedWhitelist = new Set();
 
-  whitelists.forEach(whitelist => {
+  whitelists.map(whitelist => {
+    if (typeof(whitelist) === 'string') {
+      return whitelist.split(/\s*,\s*/);
+    } if (Array.isArray(whitelist)) {
+      return whitelist;
+    }
+    throw new Error('whitelist must be either an array or a string');
+  }).forEach(whitelist => {
     whitelist.forEach(key => {
       mergedWhitelist.add(key);
     });
