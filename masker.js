@@ -3,40 +3,16 @@ const jp = require('jsonpath');
 module.exports = function create(opts) {
   const options = Object.assign({}, opts);
 
-  const whitelists = [];
-
-  if (options.whitelist) {
-    whitelists.push(options.whitelist);
-  } else if (options.whitelists) {
-    if (!Array.isArray(options.whitelists)) {
-      throw new Error("'whitelists' option must be an array");
-    }
-    Array.prototype.push.apply(whitelists, options.whitelists);
-  }
-
-  const mergedWhitelist = new Set();
-
-  whitelists.map(whitelist => {
-    if (typeof(whitelist) === 'string') {
-      return whitelist.split(/\s*,\s*/);
-    } if (Array.isArray(whitelist)) {
-      return whitelist;
-    }
-    throw new Error('whitelist must be either an array or a string');
-  }).forEach(whitelist => {
-    whitelist.forEach(key => {
-      mergedWhitelist.add(key);
-    });
-  });
+  const whitelist = prepareWhitelist(options);
 
   const whitelistedJsonPaths = [];
   const whitelistedKeys = [];
-  mergedWhitelist.forEach(item => {
-    if (item.startsWith('$')) {
+  whitelist.forEach(it => {
+    if (it.startsWith('$')) {
       jp.parse(item); // validate provided json-path
-      whitelistedJsonPaths.push(item);
+      whitelistedJsonPaths.push(it);
     } else {
-      whitelistedKeys.push(item.toUpperCase());
+      whitelistedKeys.push(it.toUpperCase());
     }
   });
 
@@ -93,6 +69,36 @@ module.exports = function create(opts) {
     }
   };
 };
+
+function prepareWhitelist(options) {
+  const whitelists = [];
+
+  if (options.whitelist) {
+    whitelists.push(options.whitelist);
+  } else if (options.whitelists) {
+    if (!Array.isArray(options.whitelists)) {
+      throw new Error("'whitelists' option must be an array");
+    }
+    Array.prototype.push.apply(whitelists, options.whitelists);
+  }
+
+  const mergedWhitelist = new Set();
+
+  whitelists.map(whitelist => {
+    if (typeof(whitelist) === 'string') {
+      return whitelist.split(/\s*,\s*/);
+    } if (Array.isArray(whitelist)) {
+      return whitelist;
+    }
+    throw new Error('whitelist must be either an array or a string');
+  }).forEach(whitelist => {
+    whitelist.forEach(key => {
+      mergedWhitelist.add(key);
+    });
+  });
+
+  return mergedWhitelist;
+}
 
 const digit = /\d/g;
 const upperCaseLatin1 = /[A-Z]/g;
