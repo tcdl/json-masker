@@ -84,7 +84,9 @@ function prepareWhitelist(options) {
 
   const mergedWhitelist = new Set();
 
-  whitelists.map(whitelist => {
+  whitelists.filter(whitelist => {
+    return typeof(whitelist) !== 'undefined' && whitelist !== null;
+  }).map(whitelist => {
     if (typeof(whitelist) === 'string') {
       return whitelist.split(/\s*,\s*/);
     } if (Array.isArray(whitelist)) {

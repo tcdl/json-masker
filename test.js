@@ -165,7 +165,7 @@ describe('json-masker', () => {
         }
       };
 
-      const mask = masker({whitelist: 'myField,FIELD2,a'});
+      const mask = masker({whitelist: 'myField,FIELD2, a, somethingElse'});
       assert.deepEqual(mask(inJson), expectedOutJson);
     });
 
@@ -214,6 +214,20 @@ describe('json-masker', () => {
         const mask = masker({whitelists: [userWhitelist, jobWhitelist, addressWhitelist]});
 
         assert.deepEqual(mask(inJson), expectedJson);
+      });
+
+      it('should handle duplicates', () => {
+        const mask = masker({whitelists: ['testField,testField2', 'testField']});
+        assert.deepEqual(mask({testField: 123}), {testField: 123});
+      });
+
+      it('should handle null and undefined values', () => {
+        const mask = masker({whitelists: [undefined, null]});
+        assert.deepEqual(mask({testField: 123}), {testField: '***'});
+      });
+
+      it('should throw if one the whitelists is invalid', () => {
+        assert.throws(() => masker({whitelists: ['field1, field2', {isWhitelist: false}]}));
       });
 
       it('should throw if whitelists is not an array', () => {
