@@ -216,6 +216,21 @@ describe('json-masker', () => {
         assert.deepEqual(mask(inJson), expectedJson);
       });
 
+      it('should ignore whitelists option if whitelist is specified', () => {
+        const inJson = {
+          myField: 'Hi',
+          a: '8301975624'
+        };
+        const expectedJson = {
+          myField: 'Hi',
+          a: '**********'
+        };
+
+        const mask = masker({whitelist: 'myField', whitelists: ['a,b']});
+
+        assert.deepEqual(mask(inJson), expectedJson);
+      });
+
       it('should handle duplicates', () => {
         const mask = masker({whitelists: ['testField,testField2', 'testField']});
         assert.deepEqual(mask({testField: 123}), {testField: 123});
