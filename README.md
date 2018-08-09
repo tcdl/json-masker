@@ -31,13 +31,14 @@ json-masker can be configured via options object passed into factory function. P
 
 ### Whitelist
 A whitelist can be defined as:
-* An array of values, e.g.: `['field1', 'field2']`
-* A string of comma separated values, e.g.: `'field1, field2'`. Whitespaces between values are ignored.
+* An array of values: `['field1', 'field2']`
+* A string of comma separated values: `'field1, field2'`. Whitespaces between values are optional and ignored.
+
 A field in a whitelist can be difined by:
 * name (case-insensitive), e.g. `myField`
 * json-path, e.g. `$.myFieldParent.myField`. For more details see json-path [documentation](https://github.com/dchester/jsonpath)
 
-### Example
+### Examples
 ```js
 const mask = masker({
   whitelist: [
@@ -49,6 +50,21 @@ const mask = masker({
     '$..path.to.a.field'
   ],
   enabled: false
+});
+```
+```js
+const mask = masker({
+  // as a string of comma separated values
+  whitelist: 'field1, field2, $..myField'
+});
+```
+```js
+const mask = masker({
+  // multiple logical whitelists
+  whitelists: [
+    'content-type, content-length, user-agent'
+    'country, state, province'
+  ]
 });
 ```
 
