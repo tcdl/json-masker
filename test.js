@@ -173,6 +173,16 @@ describe('json-masker', () => {
       assert.throws(() => masker({whitelist: {invalid: true}}));
     });
 
+    it('should handle undefined when whitelist contains json-path', () => {
+      const mask = masker({whitelist: '$.myField'});
+      assert.isUndefined(mask(undefined));
+    });
+
+    it('should handle null when whitelist contains json-path', () => {
+      const mask = masker({whitelist: '$.myField'});
+      assert.isNull(mask(null));
+    });
+
     describe('multiple whitelists', () => {
 
       it('should accept multiple whitelists', () => {

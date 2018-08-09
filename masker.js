@@ -10,10 +10,7 @@ module.exports = function create(opts) {
     if (options.enabled === false) {
       return target;
     }
-    const whitelistedPaths = whitelistedJsonPaths.reduce((accum, path) => {
-      Array.prototype.push.apply(accum, jp.paths(target, path));
-      return accum;
-    }, []).map(path => path.join('.'));
+    const whitelistedPaths = expandJsonPaths(whitelistedJsonPaths, target);
 
     return traverseAndMask(target);
 
@@ -108,6 +105,16 @@ function segregateJsonPathWhitelist(whitelist) {
     }
   });
   return [whitelistedJsonPaths, whitelistedKeys];
+}
+
+function expandJsonPaths(whitelistedJsonPaths, obj) {
+  if (!(obj instanceof Object)) {
+    return [];
+  }
+  return whitelistedJsonPaths.reduce((accum, path) => {
+    Array.prototype.push.apply(accum, jp.paths(obj, path));
+    return accum;
+  }, []).map(path => path.join('.'))
 }
 
 const digit = /\d/g;
