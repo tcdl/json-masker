@@ -101,7 +101,7 @@ function segregateJsonPathWhitelist(whitelist) {
   const whitelistedKeys = [];
   whitelist.forEach(it => {
     if (it.startsWith('$')) {
-      jp.parse(item); // validate provided json-path
+      jp.parse(it); // validate provided json-path
       whitelistedJsonPaths.push(it);
     } else {
       whitelistedKeys.push(it.toUpperCase());
