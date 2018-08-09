@@ -3,20 +3,8 @@ const jp = require('jsonpath');
 module.exports = function create(opts) {
   const options = Object.assign({}, opts);
 
-  if (options.whitelist && !Array.isArray(options.whitelist)) {
-    throw new Error('Whitelist must be an array');
-  }
-
-  const whitelistedJsonPaths = [];
-  const whitelistedKeys = [];
-  (options.whitelist || []).forEach(item => {
-    if (item.startsWith('$')) {
-      jp.parse(item); // validate provided json-path
-      whitelistedJsonPaths.push(item);
-    } else {
-      whitelistedKeys.push(item.toUpperCase());
-    }
-  });
+  const whitelist = prepareWhitelist(options);
+  const [whitelistedJsonPaths, whitelistedKeys] = segregateJsonPathWhitelist(whitelist);
 
   return function mask(target) {
     if (options.enabled === false) {
@@ -58,7 +46,7 @@ module.exports = function create(opts) {
       if (typeof(value) === 'object') {
         const valueNew = Array.isArray(value) ? [] : {};
         for (let key in value) {
-          if (value.hasOwnProperty(key)) {
+          if (Object.prototype.hasOwnProperty.call(value, key)) {
             value.__inClone = true;
             valueNew[key] = traverseAndMask(value[key], path + '.' + key, key);
             delete value.__inClone;
@@ -71,6 +59,56 @@ module.exports = function create(opts) {
     }
   };
 };
+
+function prepareWhitelist(options) {
+  const whitelists = [];
+
+  if (options.whitelist) {
+    whitelists.push(options.whitelist);
+  } else if (options.whitelists) {
+    if (!Array.isArray(options.whitelists)) {
+      throw new Error("'whitelists' option must be an array");
+    }
+    Array.prototype.push.apply(whitelists, options.whitelists);
+  }
+
+  const mergedWhitelist = new Set();
+
+  whitelists
+    .filter(whitelist => typeof(whitelist) !== 'undefined' && whitelist !== null)
+    .map(parseWhitelist)
+    .forEach(whitelist => {
+      whitelist.forEach(key => {
+        mergedWhitelist.add(key);
+      });
+    });
+
+  return mergedWhitelist;
+}
+
+function parseWhitelist(whitelist) {
+  if (typeof(whitelist) === 'string') {
+    return whitelist.split(/\s*,\s*/);
+  }
+  if (Array.isArray(whitelist)) {
+    return whitelist;
+  }
+  throw new Error('whitelist must be either an array or a string');
+}
+
+function segregateJsonPathWhitelist(whitelist) {
+  const whitelistedJsonPaths = [];
+  const whitelistedKeys = [];
+  whitelist.forEach(it => {
+    if (it.startsWith('$')) {
+      jp.parse(it); // validate provided json-path
+      whitelistedJsonPaths.push(it);
+    } else {
+      whitelistedKeys.push(it.toUpperCase());
+    }
+  });
+  return [whitelistedJsonPaths, whitelistedKeys];
+}
 
 const digit = /\d/g;
 const upperCaseLatin1 = /[A-Z]/g;

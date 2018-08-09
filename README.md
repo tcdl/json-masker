@@ -25,10 +25,20 @@ app.post('/customers', (req, res) => {
 
 ## Configuration
 json-masker can be configured via options object passed into factory function. Possible parameters are:
- * `whitelist`. A list of whitelisted fields. The values of whitelisted fields will _not_ be masked. Either a field name or a json-path can be specified. Field names are treated case-insensitive. For json-path see [documentation](https://github.com/dchester/jsonpath). Default: `[]`
- * `enabled`. A boolean flag that toggles masking functionality. If set to `false`, none of the fields will be masked. Might be useful for debug purposes. Default: `true`
+ * `whitelist` - a field whitelist. The values of whitelisted fields will _not_ be masked. See _Whitelist_ section for whitelist format documentation. Default: _empty_
+ * `whitelists` - a collection of field whitelists. Used if `whitelist` option is not present, otherwise is ignored. Allows to define multiple logicaly-split whitelists. Is only for user convenience. Internally, the collection of whitelists is merged into one anyway. Default: _empty_
+ * `enabled` - a boolean flag that toggles masking functionality. If set to `false`, none of the fields will be masked. Might be useful for debug purposes. Default: `true`
 
-### Example
+### Whitelist
+A whitelist can be defined as:
+* An array of values: `['field1', 'field2']`
+* A string of comma separated values: `'field1, field2'`. Whitespaces between values are optional and ignored.
+
+A field in a whitelist can be difined by:
+* name (case-insensitive), e.g. `myField`
+* json-path, e.g. `$.myFieldParent.myField`. For more details see json-path [documentation](https://github.com/dchester/jsonpath)
+
+### Examples
 ```js
 const mask = masker({
   whitelist: [
@@ -40,6 +50,21 @@ const mask = masker({
     '$..path.to.a.field'
   ],
   enabled: false
+});
+```
+```js
+const mask = masker({
+  // as a string of comma separated values
+  whitelist: 'field1, field2, $..myField'
+});
+```
+```js
+const mask = masker({
+  // multiple logical whitelists
+  whitelists: [
+    'content-type, content-length, user-agent'
+    'country, state, province'
+  ]
 });
 ```
 
