@@ -275,4 +275,15 @@ describe('json-masker', () => {
     assert.deepEqual(mask(inJson), expectedOutJson);
     assert.equal(inJson.myField, 'Hi');
   });
+
+  it('should mask a dictionary (object without prototype)', () => {
+    const inJson = Object.create(null);
+    inJson.myField = 'Hi';
+    inJson.myField2 = 'abc';
+    const expectedOutJson = {myField: 'Hi', myField2: 'xxx'};
+
+    const mask = masker({whitelist: 'myField'});
+
+    assert.deepEqual(mask(inJson), expectedOutJson);
+  });
 });

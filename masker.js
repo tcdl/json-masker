@@ -46,7 +46,7 @@ module.exports = function create(opts) {
       if (typeof(value) === 'object') {
         const valueNew = Array.isArray(value) ? [] : {};
         for (let key in value) {
-          if (value.hasOwnProperty(key)) {
+          if (Object.prototype.hasOwnProperty.call(value, key)) {
             value.__inClone = true;
             valueNew[key] = traverseAndMask(value[key], path + '.' + key, key);
             delete value.__inClone;
