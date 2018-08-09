@@ -4,17 +4,7 @@ module.exports = function create(opts) {
   const options = Object.assign({}, opts);
 
   const whitelist = prepareWhitelist(options);
-
-  const whitelistedJsonPaths = [];
-  const whitelistedKeys = [];
-  whitelist.forEach(it => {
-    if (it.startsWith('$')) {
-      jp.parse(item); // validate provided json-path
-      whitelistedJsonPaths.push(it);
-    } else {
-      whitelistedKeys.push(it.toUpperCase());
-    }
-  });
+  const [whitelistedJsonPaths, whitelistedKeys] = segregateJsonPathWhitelist(whitelist);
 
   return function mask(target) {
     if (options.enabled === false) {
@@ -84,22 +74,40 @@ function prepareWhitelist(options) {
 
   const mergedWhitelist = new Set();
 
-  whitelists.filter(whitelist => {
-    return typeof(whitelist) !== 'undefined' && whitelist !== null;
-  }).map(whitelist => {
-    if (typeof(whitelist) === 'string') {
-      return whitelist.split(/\s*,\s*/);
-    } if (Array.isArray(whitelist)) {
-      return whitelist;
-    }
-    throw new Error('whitelist must be either an array or a string');
-  }).forEach(whitelist => {
-    whitelist.forEach(key => {
-      mergedWhitelist.add(key);
+  whitelists
+    .filter(whitelist => typeof(whitelist) !== 'undefined' && whitelist !== null)
+    .map(parseWhitelist)
+    .forEach(whitelist => {
+      whitelist.forEach(key => {
+        mergedWhitelist.add(key);
+      });
     });
-  });
 
   return mergedWhitelist;
+}
+
+function parseWhitelist(whitelist) {
+  if (typeof(whitelist) === 'string') {
+    return whitelist.split(/\s*,\s*/);
+  }
+  if (Array.isArray(whitelist)) {
+    return whitelist;
+  }
+  throw new Error('whitelist must be either an array or a string');
+}
+
+function segregateJsonPathWhitelist(whitelist) {
+  const whitelistedJsonPaths = [];
+  const whitelistedKeys = [];
+  whitelist.forEach(it => {
+    if (it.startsWith('$')) {
+      jp.parse(item); // validate provided json-path
+      whitelistedJsonPaths.push(it);
+    } else {
+      whitelistedKeys.push(it.toUpperCase());
+    }
+  });
+  return [whitelistedJsonPaths, whitelistedKeys];
 }
 
 const digit = /\d/g;
